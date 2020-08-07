@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <!-- Webpage Title -->
+        <title>하늘 캠핑장 | 온라인예약</title>
+        <!-- Required meta tags -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+              crossorigin="anonymous">
+        <!-- JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+        <!-- 구글폰트 -->
+        <link href="https://fonts.googleapis.com/css2?family=Gamja+Flower&display=swap" rel="stylesheet">
+        <style type="text/css">
+            * {
+                font-family: 'Gamja Flower', cursive;
+            }
+            .wrap {
+                width: 600px;
+                margin: auto;
+            }
+            .img {
+                background-image: url('https://imgnews.pstatic.net/image/032/2019/05/01/0002937806_004_20190501112102947.jpg?type=w647');
+                background-size: cover;
+                background-position: center;
+                width: 600px;
+                height: 400px;
+                border-radius: 10px;
+            }
+            .info {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+            h1, h5 {
+                display: inline;
+            }
+            .order {
+                text-align: center;
+            }
+            .orders {
+                margin-top: 100px;
+            }
+            .exchange{
+                color: palevioletred;
+            }
+            .listname{
+                color: mediumorchid;
+            }
+        </style>
+        <script>
+            $(document).ready(function () {
+                $('#orders-box').html("");
+                exchange_rate();
+                showList();
+            });
+            function exchange_rate() {
+                $.ajax({
+                    type: "GET",
+                    url: "https://api.manana.kr/exchange/rate.json",
+                    data: {},
+                    success: function (response) {
+                        for (let i = 0; i < response.length; i++) {
+                            if (response[i]['name'] == 'USDKRW=X') {
+                                $('#exchange').text(response[i]['rate']);
+                                return;
+                            }
+                        }
+
+                    }
+                })
+            }
+            function addList() {
+                let name = $('#order-name').val();
+                let phone = $('#order-phone').val();
+                let date = $('#date-count').val();
+                let site = $('#site-count').val();
+                let site_number = $('#site-number-count').val();
+
+                if(name === '' || phone === '' || date === '' || site === '' || site_number === ''){
+                    alert('입력값을 모두 채워주세요');
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/camp",
+                    data: {'name': name, 'phone': phone, 'date': date, 'site': site, 'site_number': site_number},
+                    success: function (response) { // 성공하면
+                        if (response["result"] == "success") {
+                            alert(response["msg"]);
+                            window.location.reload();
+                        }
+                    }
+                })
+            }
+            function showList(){
+                $.ajax({
+                    type: "GET",
+                    url: "/camp",
+                    data: {},
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            console.log(response["msg"])
+                            let camp = response["msg"]
+
+                            for(let index = 0; index < camp.length; index++) {
+                                let name = camp[index]['name'];
+                                let phone = camp[index]['phone'];
+                                let date = camp[index]['date'];
+                                let site = camp[index]['site'];
+                                let site_number = camp[index]['site_number'];
+
+                                let campData = `<tr>
+                                                    <td>${name}</td>
+                                                    <td>${phone}</td>
+                                                    <td>${date}</td>
+                                                    <td>${site}</td>
+                                                    <td>${site_number}</td>
+                                               </tr>`;
+                                $("#orders-box").append(campData);
+                            }
+                        }
+                    }
+                })
+            }
+        </script>
+    </head>
+    <body>
+        <div class="wrap">
+            <div class="img"></div>
+            <div class="info">
+                <h1>캠핑장 온라인 예약</h1>
+                <hr>
+                <div>
+                    <h5>
+                        캠핑장 이용요금(전기 사용료 포함) : 30,000원
+                    </h5>
+                </div>
+                <div class="exchange">달러-원 환율: <span id="exchange">1194.76</span></div>
+
+                <hr>
+                <p>차 안에 짐가방 하나 툭 던져 놓고 발길 닿는 대로 자유롭게
+                    떠나는 여행, 몸과 마음을 힐링하고자 하는 여행을 누구나
+                    한번쯤은 꿈꿨을 것입니다. 하늘캠핑장은 다양한 편의
+                    시설, 아름다운 자연이 골고루 자리하고 있어 편안한 휴식을
+                    제공하고 특별한 추억을 만들어 드릴 것 입니다.</p>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">주문자 이름</span>
+                    </div>
+                    <input type="text" class="form-control" id="order-name">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">전화번호</span>
+                    </div>
+                    <input type="text" class="form-control" id="order-phone">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">*박 *일</label>
+                    </div>
+                    <select class="custom-select" id="date-count">
+                        <option selected value=""> -- 날짜를 선택하세요 --</option>
+                        <option value="1박 2일">1박 2일</option>
+                        <option value="2박 3일">2박 3일</option>
+                        <option value="3박 4일">3박 4일</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">사이트</label>
+                    </div>
+                    <select class="custom-select" id="site-count">
+                        <option selected value=""> -- 사이트를 선택하세요 --</option>
+                        <option value="site A">site A</option>
+                        <option value="site B">site B</option>
+                        <option value="site C">site C</option>
+                        <option value="site D">site D</option>
+                        <option value="site E">site E</option>
+                    </select>
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text">사이트 넘버</label>
+                    </div>
+                    <select class="custom-select" id="site-number-count">
+                        <option selected value=""> -- 사이트 넘버를 선택하세요 --</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+                <div class="order">
+                    <button onclick="addList()" type="button" class="btn btn-primary">예약하기</button>
+                </div>
+                <hr>
+                <div>
+                    <div class = listname>
+                        <h2>예약 List</h2>
+                    </div>
+                    <div class = "orders">
+                        <table class = "table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">이름</th>
+                                    <th scope="col">전화번호</th>
+                                    <th scope="col">일정</th>
+                                    <th scope="col">사이트</th>
+                                    <th scope="col">사이트 넘버</th>
+                                </tr>
+                            </thead>
+                            <tbody id = "orders-box">
+                                <tr>
+                                    <td>name</td>
+                                    <td>phone</td>
+                                    <td>date</td>
+                                    <td>site</td>
+                                    <td>site_number</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

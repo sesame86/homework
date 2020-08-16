@@ -20,58 +20,100 @@
 
     <!-- 구글폰트 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap" rel="stylesheet">
 
 
-    <title>Movie Recommend System | Home</title>
+    <title>Calcifer</title>
 
     <style>
+        * {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .site-title-font{
+            color: red;
+            font-family: 'Gloria Hallelujah', cursive;
+            font-size: 27px;
+        }
         .size{
             width: auto;
             height: 800px;
         }
         .wrap {
-            width: 1800px;
+            width: 900px;
             margin: auto;
         }
+        .background{
+            background-color:black;
+        }
+        .ranking-font{
+            font-family: 'Black Han Sans', sans-serif;
+            font-size: 30px;
+        }
+        .date-font-color{
+            color: gray;
+        }
+
     </style>
 
     <script>
         $(document).ready(function () {
             // 창을 새로고침할 때마다 실행할 함수를 여기에 입력합니다.
-            $('#day-rank').empty();
+            showDayBoxoffice();
+            showWeekendBoxoffice();
+
         });
+
 
         function showDayBoxoffice() {
             $('#day-rank').empty();
+            let now = new Date();
+            let today = now.getFullYear()+ "" + (now.getMonth()+1) + "" + now.getDate();
+            console.log(today);
+
             $.ajax({
                 type: "GET",
                 url: "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json",
-                data: {},
+                data: {key:"e1fca8d9b4be5d89b7b54e6818637eb3", targetDt: "20200815"},
                 success: function (response) {
-                    let works = response["works"];
-                    for (let i = 0; i < works.length; i++) {
-                        let rank = boxOfficeResult[dailyBoxOfficeList][i]['rank'];
-                        let movieNm = boxOfficeResult[dailyBoxOfficeList][i]['movieNm'];
-                        let openDt = boxOfficeResult[dailyBoxOfficeList][i]['openDt'];
+                    let dailyRank = response["boxOfficeResult"]["dailyBoxOfficeList"];
+                    for (let i = 0; i < dailyRank.length; i++) {
+                        let rank = dailyRank[i]['rank'];
+                        let movieNm = dailyRank[i]['movieNm'];
+                        let openDt = dailyRank[i]['openDt'];
 
-                        tempHtml = `<div class="media text-muted pt-3">
-                                      <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em" translate="translated"><font class="papago-parent"><font class="papago-source" style="display:none;">32x32</font>32x32</font></text></svg>
-                                      <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-                                        <strong class="d-block text-gray-dark"><font>${rank} ${movieNm}</font></strong><font>${openDt}</font></p>
-                                    </div>`;
-
-                        $('#day-rank').append(tempHtml);
+                        let dailylist = `<ul>${rank} ${movieNm} <font class="date-font-color">[${openDt}]</font></ul>`;
+                        $('#day-rank').append(dailylist);
                     }
                 }
             })
+        }
 
+        function showWeekendBoxoffice() {
+            $('#weekend-rank').empty();
+            $.ajax({
+                type: "GET",
+                url: "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchWeeklyBoxOfficeList",
+                data: {key:"e1fca8d9b4be5d89b7b54e6818637eb3", targetDt:"20200808", weekGb:"1"},
+                success: function (response) {
+                    let weekendRank = response["boxOfficeResult"]["weeklyBoxOfficeList"];
+                    for (let i = 0; i < weekendRank.length; i++) {
+                        let rank = weekendRank[i]['rank'];
+                        let movieNm = weekendRank[i]['movieNm'];
+                        let openDt = weekendRank[i]['openDt'];
+
+                        let weekendlist = `<ul>${rank} ${movieNm} <font class="date-font-color">[${openDt}]</font></ul>`;
+                        $('#weekend-rank').append(weekendlist);
+                    }
+                }
+            })
         }
     </script>
 </head>
-<body>
+<body class="background">
 <header>
   <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-    <a class="navbar-brand" href="#">Netfilx</a>
+    <a class="navbar-brand" href="#"><font class="site-title-font">Calcifer</font></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -84,12 +126,23 @@
           <a class="nav-link" href="http://localhost:8080/">star</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">my home</a>
+          <a class="nav-link" href="#">genre</a>
         </li>
+        <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          my page
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">로그인</a>
+          <a class="dropdown-item" href="#">회원가입</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">my home</a>
+        </div>
+      </li>
       </ul>
       <form class="form-inline mt-2 mt-md-0">
         <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
       </form>
     </div>
   </nav>
@@ -102,13 +155,13 @@
   </ol>
   <div class="carousel-inner size">
     <div class="carousel-item active">
-      <img src="https://lh3.googleusercontent.com/proxy/3QH1ofTVNblgKuBgBvk47xs77xeE3ziJTcd4WMJx89Oygn5B_xtoS4rNIeP6zG0DrF9m8IkjjQq7z0U5F4K6HTWihS5dgcxGVV9Bf_iTu_3kLip2pw" class="d-block w-100" alt="...">
+      <img src="https://movie-phinf.pstatic.net/20200706_13/1594001490092ANyda_JPEG/movie_image.jpg?type=m665_443_2" class="d-block w-100" alt="...">
     </div>
     <div class="carousel-item size">
-      <img src="https://t1.daumcdn.net/thumb/R720x0/?fname=http://t1.daumcdn.net/brunch/service/user/4arX/image/ThmomYfV2fLl1k3iXCe__ZywsAk.jpg" class="d-block w-100" alt="...">
+      <img src="https://movie-phinf.pstatic.net/20111223_65/1324617569953I8fSe_JPEG/movie_image.jpg?type=m665_443_2" class="d-block w-100" alt="...">
     </div>
     <div class="carousel-item size">
-      <img src="https://lh3.googleusercontent.com/proxy/qKMafejVsK-rdjR4uf7_gu-vCAH0a0uNMNMvEqSbNOoNMBDTNzaEmjimfsX5Y7bGkpZwZPI29kRMONaRH_XOyAVzk9o_uLHvli_lFrJIJ86cF2xaADMGLJku" class="d-block w-100" alt="...">
+      <img src="https://movie-phinf.pstatic.net/20200624_214/1592990941487qtYTR_JPEG/movie_image.jpg?type=m665_443_2" class="d-block w-100" alt="...">
     </div>
   </div>
   <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
@@ -121,18 +174,24 @@
   </a>
 </div>
 <div class="wrap">
-    <div class="my-3 p-3 bg-white rounded shadow-sm">
-    <h6 class="border-bottom border-gray pb-2 mb-0" translate="translated"><font class="papago-parent"><font class="papago-source" style="display:none;">Recent updates</font>일일 박스오피스</font></h6>
-    <div class="media text-muted pt-3" class="day-rank">
-      <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: 32x32"><title>Placeholder</title><rect width="100%" height="100%" fill="#007bff"></rect><text x="50%" y="50%" fill="#007bff" dy=".3em" translate="translated"><font class="papago-parent"><font class="papago-source" style="display:none;">32x32</font>32x32</font></text></svg>
-      <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
-        <strong class="d-block text-gray-dark"><font>@ 사용자 이름</font></strong><font>안녕</font></p>
+    <div class="row row-cols-1 row-cols-md-2">
+        <div class="col mb-4">
+            <div class="card text-white background mb-3">
+                <div class="card-header ranking-font">일일 박스오피스</div>
+                <div class="card-body" id="day-rank">
+                </div>
+            </div>
+        </div>
+        <div class="col mb-4">
+            <div class="card text-white background mb-3">
+                <div class="card-header ranking-font">주말 박스오피스</div>
+                <div class="card-body" id="weekend-rank">
+                </div>
+            </div>
+        </div>
     </div>
-    <small class="d-block text-right mt-3">
-      <a href="#" translate="translated"><font class="papago-parent"><font class="papago-source" style="display:none;">All updates</font>모든 업데이트</font></a>
-    </small>
-  </div>
 </div>
+
 
 </body>
 </html>

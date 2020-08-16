@@ -1,5 +1,5 @@
+import datetime
 from pymongo import MongoClient
-
 from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
@@ -12,7 +12,6 @@ db = client.MovieDB
 @app.route('/')
 def home():
     return render_template('index.html')
-
 
 
 

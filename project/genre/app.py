@@ -1,12 +1,18 @@
-from flask import Flask
+from pymongo import MongoClient
+from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
 
+client = MongoClient('localhost', 27017)
+db = client.MovieDB
 
+
+# HTML 화면 보여주기
 @app.route('/')
-def hello_world():
-    return 'Hello World!'
+def home():
+    return render_template('index.html')
+
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run('0.0.0.0', port=5001, debug=True)

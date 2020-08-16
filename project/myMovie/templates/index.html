@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <!-- 구글폰트 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+
+
+    <title>Movie Recommend System</title>
+
+    <!-- style -->
+    <style type="text/css">
+        * {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .link-font{
+            font-size: 18px;
+            color:black;
+        }
+        .background{
+            background: black;
+        }
+        .wrap {
+            width: 900px;
+            margin: auto;
+        }
+        .starR1{
+            background: url('http://miuu227.godohosting.com/images/icon/ico_review.png') no-repeat -52px 0;
+            background-size: auto 100%;
+            width: 15px;
+            height: 30px;
+            float:left;
+            text-indent: -9999px;
+            cursor: pointer;
+        }
+        .starR2{
+            background: url('http://miuu227.godohosting.com/images/icon/ico_review.png') no-repeat right 0;
+            background-size: auto 100%;
+            width: 15px;
+            height: 30px;
+            float:left;
+            text-indent: -9999px;
+            cursor: pointer;
+        }
+        .starR1.on{background-position:0 0;}
+        .starR2.on{background-position:-15px 0;}
+
+    </style>
+    <script>
+        $(document).ready(function () {
+                // index.html 로드가 완료되면 자동으로 showStar() 함수를 호출합니다.
+            showMovie();
+            });
+
+
+        function showMovie() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/list',
+                data: {},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let movies = response['msg'];
+                        let moviesLength = movies.length;
+
+                        for (let index = 0; index < moviesLength; index++) {
+                            let imgUrl = movies[index]['img_url'];
+                            let title = movies[index]['title'];
+                            let url = movies[index]['url'];
+                            let like = movies[index]['like'];
+
+                            let movieCard = `<div class="card">
+                                                        <img class="card-img-top" src="${imgUrl}" alt="Card image cap">
+                                                        <div class="card-body text-center">
+                                                        <a href="${url}" target="_blank" class="link-font">${title}</a>
+                                                            <div class="starRev">
+                                                              <span class="starR1">별1_왼쪽</span>
+                                                              <span class="starR2">별1_오른쪽</span>
+                                                              <span class="starR1">별2_왼쪽</span>
+                                                              <span class="starR2">별2_오른쪽</span>
+                                                              <span class="starR1">별3_왼쪽</span>
+                                                              <span class="starR2">별3_오른쪽</span>
+                                                              <span class="starR1">별4_왼쪽</span>
+                                                              <span class="starR2">별4_오른쪽</span>
+                                                              <span class="starR1">별5_왼쪽</span>
+                                                              <span class="starR2">별5_오른쪽</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>`;
+                            $("#cards-box").append(movieCard);
+                            $('.starRev span').click(function(){
+                              $(this).parent().children('span').removeClass('on');
+                              $(this).addClass('on').prevAll('span').addClass('on');
+                              return false;
+                            });
+                        }
+                    }
+                }
+            });
+        }
+
+    </script>
+
+</head>
+
+<body class="background">
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <a class="navbar-brand" href="#">Netfilx</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item active">
+          <a class="nav-link" href="http://localhost:5000/">Home <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="http://localhost:8080/">star</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">my home</a>
+        </li>
+      </ul>
+      <form class="form-inline mt-2 mt-md-0">
+        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+  </nav>
+</header>
+<div class="wrap">
+    <div class="card-columns" id="cards-box">
+    </div>
+</div>
+</body>
+
+</html>

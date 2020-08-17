@@ -67,14 +67,22 @@
 
         function showDayBoxoffice() {
             $('#day-rank').empty();
-            let now = new Date();
-            let today = now.getFullYear()+ "" + (now.getMonth()+1) + "" + now.getDate();
-            console.log(today);
+
+            Date.prototype.yyyymmdd = function() {
+                var yyyy = this.getFullYear().toString();
+                var mm = (this.getMonth() + 1).toString();
+                var dd = this.getDate().toString();
+
+                return yyyy + (mm[1] ? mm : '0'+mm[0]) + (dd[1] ? dd : '0'+dd[0]);}
+
+                let yesterday = (new Date()).yyyymmdd()-1;
+                console.log(yesterday);
+
 
             $.ajax({
                 type: "GET",
                 url: "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json",
-                data: {key:"e1fca8d9b4be5d89b7b54e6818637eb3", targetDt: "20200815"},
+                data: {key:"e1fca8d9b4be5d89b7b54e6818637eb3", targetDt: yesterday},
                 success: function (response) {
                     let dailyRank = response["boxOfficeResult"]["dailyBoxOfficeList"];
                     for (let i = 0; i < dailyRank.length; i++) {
@@ -83,8 +91,11 @@
                         let openDt = dailyRank[i]['openDt'];
 
                         let dailylist = `<ul>${rank} ${movieNm} <font class="date-font-color">[${openDt}]</font></ul>`;
+                        let day =
                         $('#day-rank').append(dailylist);
                     }
+                    let day = `<font>[${yesterday}] 박스오피스</font>`;
+                    $('#day').append(day);
                 }
             })
         }
@@ -177,7 +188,7 @@
     <div class="row row-cols-1 row-cols-md-2">
         <div class="col mb-4">
             <div class="card text-white background mb-3">
-                <div class="card-header ranking-font">일일 박스오피스</div>
+                <div class="card-header ranking-font"><font id="day"></font></div>
                 <div class="card-body" id="day-rank">
                 </div>
             </div>

@@ -59,11 +59,55 @@
     <script>
         $(document).ready(function () {
             // 창을 새로고침할 때마다 실행할 함수를 여기에 입력합니다.
+            showImage()
             showDayBoxoffice();
             showWeekendBoxoffice();
 
         });
 
+        function showImage() {
+            $.ajax({
+                    type: 'GET',
+                    url: 'https://api.themoviedb.org/3/movie/popular?api_key=a338932a06b8f07fb4c5638b91007531&language=en-US&page=1',
+                    data: {"api_key": "a338932a06b8f07fb4c5638b91007531"},
+                    success: function (response) {
+                        console.log(response)
+                        let movies = response["results"]
+                        let moviesLength = movies.length;
+
+                        for (let index = 1; index < 2; index++) {
+                            let id = movies[index]['id'];
+                            let title = movies[index]['title'];
+                            let backdrop_path = movies[index]['backdrop_path']
+                            let base_url = "https://image.tmdb.org/t/p/w300/"
+
+
+                            let image = `<img src="${base_url}${backdrop_path}" class="d-block w-100" alt="...">`;
+                            $("#showimage01").append(image);
+                        }
+                        for (let index = 2; index < 3; index++) {
+                            let id = movies[index]['id'];
+                            let title = movies[index]['title'];
+                            let backdrop_path = movies[index]['backdrop_path']
+                            let base_url = "https://image.tmdb.org/t/p/w300/"
+
+
+                            let image = `<img src="${base_url}${backdrop_path}" class="d-block w-100" alt="...">`;
+                            $("#showimage02").append(image);
+                        }
+                        for (let index = 3; index < 4; index++) {
+                            let id = movies[index]['id'];
+                            let title = movies[index]['title'];
+                            let backdrop_path = movies[index]['backdrop_path']
+                            let base_url = "https://image.tmdb.org/t/p/w300/"
+
+
+                            let image = `<img src="${base_url}${backdrop_path}" class="d-block w-100" alt="...">`;
+                            $("#showimage03").append(image);
+                        }
+                    }
+                });
+            }
 
         function showDayBoxoffice() {
             $('#day-rank').empty();
@@ -149,12 +193,12 @@
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#">my home</a>
         </div>
-      </li>
       </ul>
-      <form class="form-inline mt-2 mt-md-0">
-        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
-      </form>
+        <nav class="navbar navbar-light bg-dark">
+          <form class="form-inline">
+            <a class="btn btn-outline-danger" role="button" href="http://127.0.0.1:5003/">Search</a>
+          </form>
+        </nav>
     </div>
   </nav>
 </header>
@@ -165,15 +209,15 @@
     <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
   </ol>
   <div class="carousel-inner size">
-    <div class="carousel-item active">
-      <img src="https://movie-phinf.pstatic.net/20200706_13/1594001490092ANyda_JPEG/movie_image.jpg?type=m665_443_2" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item size">
-      <img src="https://movie-phinf.pstatic.net/20111223_65/1324617569953I8fSe_JPEG/movie_image.jpg?type=m665_443_2" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item size">
-      <img src="https://movie-phinf.pstatic.net/20200624_214/1592990941487qtYTR_JPEG/movie_image.jpg?type=m665_443_2" class="d-block w-100" alt="...">
-    </div>
+      <div class="carousel-item active" id="showimage01">
+
+      </div>
+      <div class="carousel-item" id="showimage02">
+
+      </div>
+      <div class="carousel-item" id="showimage03">
+
+      </div>
   </div>
   <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>

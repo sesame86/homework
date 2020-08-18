@@ -1,4 +1,4 @@
-<!doctype html>
+<!Doctype html>
 <html lang="ko">
 
 <head>
@@ -23,7 +23,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Gloria+Hallelujah&display=swap" rel="stylesheet">
 
-    <title>Movie Recommend System</title>
+    <title>Calcifer</title>
 
     <!-- style -->
     <style type="text/css">
@@ -66,61 +66,81 @@
         }
         .starR1.on{background-position:0 0;}
         .starR2.on{background-position:-15px 0;}
-
     </style>
+
     <script>
         $(document).ready(function () {
-                // index.html 로드가 완료되면 자동으로 showStar() 함수를 호출합니다.
             showMovie();
             });
 
-
-        function showMovie() {
-            $.ajax({
-                type: 'GET',
-                url: '/api/list',
-                data: {},
-                success: function (response) {
-                    if (response['result'] == 'success') {
-                        let movies = response['msg'];
+        function showMovie(page) {
+            let popular_movie_page;
+            for (popular_movie_page = 1; popular_movie_page < 20; popular_movie_page++) {
+                $.ajax({
+                    type: 'GET',
+                    url: 'https://api.themoviedb.org/3/movie/popular?api_key=a338932a06b8f07fb4c5638b91007531&language=en-US&page=1',
+                    data: {"api_key": "a338932a06b8f07fb4c5638b91007531", "page": popular_movie_page},
+                    success: function (response) {
+                        console.log(response)
+                        //if (response['result'] == 'success') {
+                        //let movies = response['msg'];
+                        let movies = response["results"]
                         let moviesLength = movies.length;
 
                         for (let index = 0; index < moviesLength; index++) {
-                            let imgUrl = movies[index]['img_url'];
+                            //let popularity = movies[index]['popularity'];
+                            //let vote_count = movies[index]['vote_count'];
+                            //let vote_average = movies[index]['vote_average'];
+                            let id = movies[index]['id'];
                             let title = movies[index]['title'];
-                            let url = movies[index]['url'];
-                            let like = movies[index]['like'];
+                            let poster_path = movies[index]['poster_path']
+                            let poster_url = "https://image.tmdb.org/t/p/w300/"
+                            let base_url = "https://www.themoviedb.org/movie/"
+                            let rate = $('#star_count').val();
 
                             let movieCard = `<div class="card">
-                                                        <img class="card-img-top" src="${imgUrl}" alt="Card image cap">
+                                                        <img class="card-img-top" src="${poster_url}${poster_path}" alt="Card image cap">
                                                         <div class="card-body text-center">
-                                                        <a href="${url}" target="_blank" class="link-font">${title}</a>
-                                                            <div class="starRev">
-                                                              <span class="starR1" value="0.5" >별1_왼쪽</span>
-                                                              <span class="starR2" value="1.0" >별1_오른쪽</span>
-                                                              <span class="starR1" value="1.5" >별2_왼쪽</span>
-                                                              <span class="starR2" value="2.0" >별2_오른쪽</span>
-                                                              <span class="starR1" value="2.5" >별3_왼쪽</span>
-                                                              <span class="starR2" value="3.0" >별3_오른쪽</span>
-                                                              <span class="starR1" value="3.5" >별4_왼쪽</span>
-                                                              <span class="starR2" value="4.0" >별4_오른쪽</span>
-                                                              <span class="starR1" value="4.5" >별5_왼쪽</span>
-                                                              <span class="starR2" value="5.0" >별5_오른쪽</span>
+                                                        <a href="${base_url}${id}" target="_blank" class="link-font">${title}</a>
+                                                            <div class="starRev" id=star_count>
+                                                              <span class="starR1" value="0.5" onclick="rate_give('${id})">별1_왼쪽</span>
+                                                              <span class="starR2" value="1.0" onclick="rate_give('${id})">별1_오른쪽</span>
+                                                              <span class="starR1" value="1.5" onclick="rate_give('${id})">별2_왼쪽</span>
+                                                              <span class="starR2" value="2.0" onclick="rate_give('${id})">별2_오른쪽</span>
+                                                              <span class="starR1" value="2.5" onclick="rate_give('${id})">별3_왼쪽</span>
+                                                              <span class="starR2" value="3.0" onclick="rate_give('${id})">별3_오른쪽</span>
+                                                              <span class="starR1" value="3.5" onclick="rate_give('${id})">별4_왼쪽</span>
+                                                              <span class="starR2" value="4.0" onclick="rate_give('${id})">별4_오른쪽</span>
+                                                              <span class="starR1" value="4.5" onclick="rate_give('${id})">별5_왼쪽</span>
+                                                              <span class="starR2" value="5.0" onclick="rate_give('${id})">별5_오른쪽</span>
                                                             </div>
                                                         </div>
                                                     </div>`;
                             $("#cards-box").append(movieCard);
-                            $('.starRev span').click(function(){
-                              $(this).parent().children('span').removeClass('on');
-                              $(this).addClass('on').prevAll('span').addClass('on');
-                              return false;
+                            $('.starRev span').click(function () {
+                                $(this).parent().children('span').removeClass('on');
+                                $(this).addClass('on').prevAll('span').addClass('on');
+                                return false;
                             });
                         }
+                    }
+                });
+            }
+        }
+
+        function rate_give(id) {
+            $.ajax({
+                type: "POST",
+                url: "/rating",
+                data: {rate_give: rate, movieid_give: id},
+                success: function (response) {
+                    if (response["result"] == "success") {
+                        alert(response["msg"]);
+                        window.location.reload();
                     }
                 }
             });
         }
-
     </script>
 
 </head>
@@ -155,15 +175,17 @@
         </div>
       </li>
       </ul>
-      <form class="form-inline mt-2 mt-md-0">
-        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Search</button>
-      </form>
+      <nav class="navbar navbar-light bg-dark">
+          <form class="form-inline">
+            <a class="btn btn-outline-danger" role="button" href="http://127.0.0.1:5003/">Search</a>
+          </form>
+        </nav>
     </div>
   </nav>
 </header>
 <div class="wrap">
     <div class="card-columns" id="cards-box">
+
     </div>
 </div>
 </body>

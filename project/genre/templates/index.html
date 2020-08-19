@@ -56,34 +56,31 @@
 
         });
 
-        function movieGenre(search_input) {
-            $('#cards-box').empty()
-            let genre_id = $('#genreid').val();
-            let nation_id = $('#nationid').val();
-            console.log(movietitle);
+        function movieGenre() {
+            //$('#cards-box').empty();
+            let selectgenre = $('#selectgenre').val();
+            //let selectnation = $('#nationid').val();
+            console.log(selectgenre);
             $.ajax({
                 type: 'GET',
-                url: 'https://api.themoviedb.org/3/search/movie?api_key=a338932a06b8f07fb4c5638b91007531&language=ko-KR&query='+movietitle,
-                data: {"api_key": "a338932a06b8f07fb4c5638b91007531", },
+                url: 'https://api.themoviedb.org/3/movie/popular?api_key=a338932a06b8f07fb4c5638b91007531&language=ko-KR',
+                data: {"api_key": "a338932a06b8f07fb4c5638b91007531"},
                 success: function (response) {
-                    console.log(response)
+                    //console.log(response)
                     let movies = response["results"]
                     let moviesLength = movies.length;
 
                     for (let index = 0; index < moviesLength; index++) {
                         let id = movies[index]['id'];
                         let title = movies[index]['title'];
-                        let poster_path = movies[index]['poster_path']
+                        let poster_path = movies[index]['poster_path'];
                         let poster_url = "https://image.tmdb.org/t/p/w300/"
                         let base_url = "https://www.themoviedb.org/movie/"
 
-                        let movieCard = `<div class="card">
-                                                        <img class="card-img-top" src="${poster_url}${poster_path}" alt="Card image cap">
-                                                        <div class="card-body text-center">
-                                                        <a href="${base_url}${id}" target="_blank" class="link-font">${title}</a>
-                                                        </div>
-                                                    </div>`;
-                        $("#cards-box").append(movieCard);
+                        let genre_ids = movies[index]['genre_ids'];
+                        console.log(genre_ids);
+
+
                     }
                 }
             });
@@ -137,26 +134,26 @@
       <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <span class="sr-only">Toggle Dropdown</span>
       </button>
-      <div class="dropdown-menu" id="genreid">
-        <a class="dropdown-item" vlaue="28">액션</a>
-        <a class="dropdown-item" vlaue="12">모험</a>
-        <a class="dropdown-item" vlaue="16">애니메이션</a>
-        <a class="dropdown-item" vlaue="35">코미디</a>
-        <a class="dropdown-item" vlaue="80">범죄</a>
-        <a class="dropdown-item" vlaue="99">다큐멘터리</a>
-        <a class="dropdown-item" vlaue="18">드라마</a>
-        <a class="dropdown-item" vlaue="10751">가족</a>
-        <a class="dropdown-item" vlaue="14">판타지</a>
-        <a class="dropdown-item" vlaue="36">역사</a>
-        <a class="dropdown-item" vlaue="27">공포</a>
-        <a class="dropdown-item" vlaue="10402">음악</a>
-        <a class="dropdown-item" vlaue="9648">미스터리</a>
-        <a class="dropdown-item" vlaue="10749">로맨스</a>
-        <a class="dropdown-item" vlaue="878">SF</a>
-        <a class="dropdown-item" vlaue="10770">TV영화</a>
-        <a class="dropdown-item" vlaue="53">스릴러</a>
-        <a class="dropdown-item" vlaue="10752">전쟁</a>
-        <a class="dropdown-item" vlaue="37">서부</a>
+      <div class="dropdown-menu" id="selectgenre" onclick="movieGenre()">
+        <a class="dropdown-item" value="28">액션</a>
+        <a class="dropdown-item" value="12">모험</a>
+        <a class="dropdown-item" value="16">애니메이션</a>
+        <a class="dropdown-item" value="35">코미디</a>
+        <a class="dropdown-item" value="80">범죄</a>
+        <a class="dropdown-item" value="99">다큐멘터리</a>
+        <a class="dropdown-item" value="18">드라마</a>
+        <a class="dropdown-item" value="10751">가족</a>
+        <a class="dropdown-item" value="14">판타지</a>
+        <a class="dropdown-item" value="36">역사</a>
+        <a class="dropdown-item" value="27">공포</a>
+        <a class="dropdown-item" value="10402">음악</a>
+        <a class="dropdown-item" value="9648">미스터리</a>
+        <a class="dropdown-item" value="10749">로맨스</a>
+        <a class="dropdown-item" value="878">SF</a>
+        <a class="dropdown-item" value="10770">TV영화</a>
+        <a class="dropdown-item" value="53">스릴러</a>
+        <a class="dropdown-item" value="10752">전쟁</a>
+        <a class="dropdown-item" value="37">서부</a>
       </div>
     </div>
     <div class="btn-group">

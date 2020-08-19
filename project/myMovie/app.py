@@ -12,16 +12,6 @@ def home():
     return render_template('index.html')
 
 
-# API 역할을 하는 부분
-@app.route('/api/list', methods=['GET'])
-def show_movies():
-    # 1. db에서 mystar 목록 전체를 검색합니다. ID는 제외하고 like 가 많은 순으로 정렬합니다.
-    # 참고) find({},{'_id':False}), sort()를 활용하면 굿!
-    movies = list(db.naver_movies.find({}, {'_id': False}))
-    result = {'result': 'success', 'msg': movies}
-    # 2. 성공하면 success 메시지와 함께 stars_list 목록을 클라이언트에 전달합니다.
-    return jsonify(result)
-
 ## API 역할을 하는 부분
 @app.route('/rating', methods=['POST'])
 def give_rate():

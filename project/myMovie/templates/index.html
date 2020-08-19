@@ -78,7 +78,7 @@
             for (popular_movie_page = 1; popular_movie_page < 20; popular_movie_page++) {
                 $.ajax({
                     type: 'GET',
-                    url: 'https://api.themoviedb.org/3/movie/popular?api_key=a338932a06b8f07fb4c5638b91007531&language=en-US&page=1',
+                    url: 'https://api.themoviedb.org/3/movie/popular?api_key=a338932a06b8f07fb4c5638b91007531&language=ko-KR&page=1',
                     data: {"api_key": "a338932a06b8f07fb4c5638b91007531", "page": popular_movie_page},
                     success: function (response) {
                         console.log(response)

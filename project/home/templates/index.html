@@ -40,8 +40,8 @@
             height: 800px;
         }
         .wrap {
-            width: 900px;
-            margin: auto;
+            width: auto;
+            margin: 30px;
         }
         .background{
             background-color:black;
@@ -49,9 +49,14 @@
         .ranking-font{
             font-family: 'Black Han Sans', sans-serif;
             font-size: 30px;
+            color:white;
+            margin: 10px;
         }
         .date-font-color{
             color: gray;
+        }
+        .movietitle-font{
+            color: white;
         }
 
     </style>
@@ -59,9 +64,9 @@
     <script>
         $(document).ready(function () {
             // 창을 새로고침할 때마다 실행할 함수를 여기에 입력합니다.
-            showImage()
-            showDayBoxoffice();
-            showWeekendBoxoffice();
+            showImage();
+            showMovieRank();
+            currentRunningMovie();
 
         });
 
@@ -71,7 +76,7 @@
                     url: 'https://api.themoviedb.org/3/movie/popular?api_key=a338932a06b8f07fb4c5638b91007531&language=en-US&page=1',
                     data: {"api_key": "a338932a06b8f07fb4c5638b91007531"},
                     success: function (response) {
-                        console.log(response)
+                        //console.log(response)
                         let movies = response["results"]
                         let moviesLength = movies.length;
 
@@ -109,60 +114,106 @@
                 });
             }
 
-        function showDayBoxoffice() {
-            $('#day-rank').empty();
+            function showMovieRank() {
+                $.ajax({
+                    type: 'GET',
+                    url: 'https://api.themoviedb.org/3/trending/movie/day?api_key=a338932a06b8f07fb4c5638b91007531&language=ko-KR',
+                    data: {"api_key": "a338932a06b8f07fb4c5638b91007531", "media_type":"movie", "time_window":"day"},
+                    success: function (response) {
+                        console.log(response)
+                        //if (response['result'] == 'success') {
+                        //let movies = response['msg'];
+                        let movies = response["results"]
+                        let moviesLength = movies.length;
 
-            Date.prototype.yyyymmdd = function() {
-                var yyyy = this.getFullYear().toString();
-                var mm = (this.getMonth() + 1).toString();
-                var dd = this.getDate().toString();
+                        for (let index = 0; index < 12; index++) {
+                            let id = movies[index]['id'];
+                            let title = movies[index]['title'];
+                            let poster_path = movies[index]['poster_path']
+                            let poster_url = "https://image.tmdb.org/t/p/w300/"
+                            let base_url = "https://www.themoviedb.org/movie/"
+                            let rate = $('#star_count').val();
 
-                return yyyy + (mm[1] ? mm : '0'+mm[0]) + (dd[1] ? dd : '0'+dd[0]);}
-
-                let yesterday = (new Date()).yyyymmdd()-1;
-                console.log(yesterday);
-
-
-            $.ajax({
-                type: "GET",
-                url: "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json",
-                data: {key:"e1fca8d9b4be5d89b7b54e6818637eb3", targetDt: yesterday},
-                success: function (response) {
-                    let dailyRank = response["boxOfficeResult"]["dailyBoxOfficeList"];
-                    for (let i = 0; i < dailyRank.length; i++) {
-                        let rank = dailyRank[i]['rank'];
-                        let movieNm = dailyRank[i]['movieNm'];
-                        let openDt = dailyRank[i]['openDt'];
-
-                        let dailylist = `<ul>${rank} ${movieNm} <font class="date-font-color">[${openDt}]</font></ul>`;
-                        let day =
-                        $('#day-rank').append(dailylist);
+                            let movieCard = `<div class="col-1">
+                                                <div class="card bg-dark">
+                                                        <img class="card-img-top" src="${poster_url}${poster_path}" alt="Card image cap">
+                                                    </div>
+                                                    <a href="${base_url}${id}" target="_blank" class="link-font"><font class="movietitle-font">${title}</font></a>
+                                                </div>`;
+                            $("#movie-rank").append(movieCard);
+                        }
                     }
-                    let day = `<font>[${yesterday}] 박스오피스</font>`;
-                    $('#day').append(day);
-                }
-            })
-        }
+                });
+            }
 
-        function showWeekendBoxoffice() {
-            $('#weekend-rank').empty();
-            $.ajax({
-                type: "GET",
-                url: "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchWeeklyBoxOfficeList",
-                data: {key:"e1fca8d9b4be5d89b7b54e6818637eb3", targetDt:"20200808", weekGb:"1"},
-                success: function (response) {
-                    let weekendRank = response["boxOfficeResult"]["weeklyBoxOfficeList"];
-                    for (let i = 0; i < weekendRank.length; i++) {
-                        let rank = weekendRank[i]['rank'];
-                        let movieNm = weekendRank[i]['movieNm'];
-                        let openDt = weekendRank[i]['openDt'];
+            function currentRunningMovie() {
+                $.ajax({
+                    type: 'GET',
+                    url: 'https://api.themoviedb.org/3/movie/now_playing?api_key=a338932a06b8f07fb4c5638b91007531&language=ko-KR&page=1/region=korea',
+                    data: {"api_key": "a338932a06b8f07fb4c5638b91007531", "region":"SK"},
+                    success: function (response) {
+                        console.log(response)
+                        //if (response['result'] == 'success') {
+                        //let movies = response['msg'];
+                        let movies = response["results"]
+                        let moviesLength = movies.length;
 
-                        let weekendlist = `<ul>${rank} ${movieNm} <font class="date-font-color">[${openDt}]</font></ul>`;
-                        $('#weekend-rank').append(weekendlist);
+                        for (let index = 0; index < 12; index++) {
+                            let id = movies[index]['id'];
+                            let title = movies[index]['title'];
+                            let poster_path = movies[index]['poster_path']
+                            let poster_url = "https://image.tmdb.org/t/p/w300/"
+                            let base_url = "https://www.themoviedb.org/movie/"
+                            let rate = $('#star_count').val();
+
+                            let movieCard = `<div class="col-1">
+                                                <div class="card bg-dark">
+                                                        <img class="card-img-top" src="${poster_url}${poster_path}" alt="Card image cap">
+                                                    </div>
+                                                    <a href="${base_url}${id}" target="_blank" class="link-font"><font class="movietitle-font">${title}</font></a>
+                                                </div>`;
+                            $("#current-movie").append(movieCard);
+                        }
                     }
-                }
-            })
-        }
+                });
+            }
+
+        {#function showDayBoxoffice() {#}
+        {#    $('#day-rank').empty();#}
+        {##}
+        {#    Date.prototype.yyyymmdd = function() {#}
+        {#        var yyyy = this.getFullYear().toString();#}
+        {#        var mm = (this.getMonth() + 1).toString();#}
+        {#        var dd = this.getDate().toString();#}
+        {##}
+        {#        return yyyy + (mm[1] ? mm : '0'+mm[0]) + (dd[1] ? dd : '0'+dd[0]);}#}
+        {##}
+        {#        let yesterday = (new Date()).yyyymmdd()-1;#}
+        {#        console.log(yesterday);#}
+        {##}
+        {##}
+        {#    $.ajax({#}
+        {#        type: "GET",#}
+        {#        url: "http://www.kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json",#}
+        {#        data: {key:"e1fca8d9b4be5d89b7b54e6818637eb3", targetDt: yesterday},#}
+        {#        success: function (response) {#}
+        {#            let dailyRank = response["boxOfficeResult"]["dailyBoxOfficeList"];#}
+        {#            for (let i = 0; i < dailyRank.length; i++) {#}
+        {#                let rank = dailyRank[i]['rank'];#}
+        {#                let movieNm = dailyRank[i]['movieNm'];#}
+        {#                let openDt = dailyRank[i]['openDt'];#}
+        {##}
+        {#                let dailylist = `<ul>${rank} ${movieNm} <font class="date-font-color">[${openDt}]</font></ul>`;#}
+        {#                let day =#}
+        {#                $('#day-rank').append(dailylist);#}
+        {#            }#}
+        {#            let day = `<font>[${yesterday}] 박스오피스</font>`;#}
+        {#            $('#day').append(day);#}
+        {#        }#}
+        {#    })#}
+        {#}#}
+
+
     </script>
 </head>
 <body class="background">
@@ -228,24 +279,20 @@
     <span class="sr-only">Next</span>
   </a>
 </div>
-<div class="wrap">
-    <div class="row row-cols-1 row-cols-md-2">
-        <div class="col mb-4">
-            <div class="card text-white background mb-3">
-                <div class="card-header ranking-font"><font id="day"></font></div>
-                <div class="card-body" id="day-rank">
-                </div>
-            </div>
-        </div>
-        <div class="col mb-4">
-            <div class="card text-white background mb-3">
-                <div class="card-header ranking-font">주말 박스오피스</div>
-                <div class="card-body" id="weekend-rank">
-                </div>
-            </div>
+    <div class="ranking-font">영화 인기 순위</div>
+    <div class="wrap">
+        <div class="row" id="movie-rank">
+
         </div>
     </div>
-</div>
+    <div class="ranking-font">현재 상영 영화</div>
+    <div class="wrap">
+        <div class="row" id="current-movie">
+
+        </div>
+    </div>
+
+
 
 
 </body>

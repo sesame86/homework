@@ -32,6 +32,5 @@ def give_rate():
     return jsonify({'result': 'success', 'msg': '별점저장 완료😎'})
 
 
-
 if __name__ == '__main__':
     app.run('0.0.0.0', port=8080, debug=True)
